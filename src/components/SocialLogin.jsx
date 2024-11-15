@@ -3,20 +3,25 @@ import { FaGithub, FaGoogle } from "react-icons/fa6";
 import { AuthContext } from "../provider/AuthProvider";
 const SocialLogin = () => {
   const {signInWithGooglePopUp, signInWithGithub} = useContext(AuthContext)
+ 
   const handleGoogleSignIn = () =>{
     signInWithGooglePopUp()
     .then((result)=>{
-      console.log(result.user);
+  // console.log(result.user);
+  const user = result.user;
+  return user;
     }).catch((error)=>{
-      console.log('eRROR', error.message);
+      alert('eRROR', error.message);
     })
   }
   const handleSignInWithGitHub = ()=>{
     signInWithGithub()
     .then((result) =>{
-      console.log(result.user);
+      // console.log(result.user);
+      const user = result.user;
+      return user;
     }).catch((error) =>{
-      console.log('ERROR:', error.message);
+     alert('ERROR:', error.message);
     })
   }
   return (

@@ -24,7 +24,7 @@ const Register = () => {
     const photo = form.get("photo");
     const email = form.get("email");
     const password = form.get("password");
-    console.log({ name, photo, email, password });
+  
 
     createNewUser(email, password)
       .then((result) => {
@@ -33,13 +33,13 @@ const Register = () => {
         updateUserProfile({ displayName: name, photoURL: photo }).then(() => {
           navigate("/");
         }).catch((err =>{
-          console.log(err);
+         alert(err);
         }))
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.Message;
-        console.log("ERROR", errorCode, errorMessage);
+        alert("ERROR", errorCode, errorMessage);
       });
   };
   return (
