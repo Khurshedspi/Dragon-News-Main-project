@@ -1,46 +1,55 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 
-
 const Register = () => {
-const {createNewUser,setUser} = useContext(AuthContext)
+  const { createNewUser, setUser, updateUserProfile } = useContext(AuthContext);
+  const [error, setError] = useState({});
+  const navigate = useNavigate();
 
-    const handleSubmit= (e) =>{
-        e.preventDefault();
-// get form data
-// const name = e.target.name.value;
-// const photo = e.target.photo.value;
-// const email = e.target.email.value;
-// const password =e.target.password.value;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // get form data
+    // const name = e.target.name.value;
+    // const photo = e.target.photo.value;
+    // const email = e.target.email.value;
+    // const password =e.target.password.value;
 
-const form = new FormData(e.target);
-const name = form.get("name");
-const photo = form.get("photo");
-const email = form.get("email");
-const password = form.get("password");
-console.log({name, photo, email,password});
+    const form = new FormData(e.target);
+    const name = form.get("name");
+    if (name.length <= 5) {
+      setError({ ...error, name: "must be more then 5 character long" });
+      return;
+    }
+    const photo = form.get("photo");
+    const email = form.get("email");
+    const password = form.get("password");
+    console.log({ name, photo, email, password });
 
-createNewUser(email, password).then((result) =>{
-    const user = result.user;
-    console.log(user);
-    setUser(user)
-})
-.catch((error)=>{
-    const errorCode = error.code;
-    const errorMessage = error.Message
-    console.log('ERROR', errorCode, errorMessage);
-})
-
-    };
+    createNewUser(email, password)
+      .then((result) => {
+        const user = result.user;
+        setUser(user);
+        updateUserProfile({ displayName: name, photoURL: photo }).then(() => {
+          navigate("/");
+        }).catch((err =>{
+          console.log(err);
+        }))
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.Message;
+        console.log("ERROR", errorCode, errorMessage);
+      });
+  };
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="card bg-base-100 w-full max-w-lg shrink-0 rounded-none p-10">
         <form onSubmit={handleSubmit} className="card-body">
-        <h1 className="text-center text-3xl font-semibold mb-10">
-              Register your Account
-            </h1>
-          <div className="form-control">   
+          <h1 className="text-center text-3xl font-semibold mb-10">
+            Register your Account
+          </h1>
+          <div className="form-control">
             <label className="label">
               <span className="label-text">Name</span>
             </label>
@@ -52,19 +61,23 @@ createNewUser(email, password).then((result) =>{
               required
             />
           </div>
-          <div className="form-control">   
+
+          {error.name && (
+            <label className="label text-sm text-red-600">{error.name}</label>
+          )}
+          <div className="form-control">
             <label className="label">
               <span className="label-text">Photo URL</span>
             </label>
             <input
-            name="photo"
+              name="photo"
               type="text"
               placeholder="Photo URL"
               className="input input-bordered"
               required
             />
           </div>
-          <div className="form-control">   
+          <div className="form-control">
             <label className="label">
               <span className="label-text">Email</span>
             </label>
@@ -98,8 +111,8 @@ createNewUser(email, password).then((result) =>{
           </div>
         </form>
         <p className="text-center font-semibold">
-       Already Have An Account ? 
-            <Link className="text-red-500 ml-1" to="/auth/login">
+          Already Have An Account ?
+          <Link className="text-red-500 ml-1" to="/auth/login">
             Login
           </Link>
         </p>
